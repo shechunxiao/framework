@@ -34,12 +34,12 @@ class Kernel implements KernelContract
      * @var array
      */
     protected $bootstrappers = [
-        \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
-        \Illuminate\Foundation\Bootstrap\LoadConfiguration::class,
-        \Illuminate\Foundation\Bootstrap\HandleExceptions::class,
-        \Illuminate\Foundation\Bootstrap\RegisterFacades::class,
-        \Illuminate\Foundation\Bootstrap\RegisterProviders::class,
-        \Illuminate\Foundation\Bootstrap\BootProviders::class,
+        \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,//加载环境变量，也就是.env文件相关配置信息
+        \Illuminate\Foundation\Bootstrap\LoadConfiguration::class, //加载config目录下的所有配置文件
+        \Illuminate\Foundation\Bootstrap\HandleExceptions::class, //异常处理
+        \Illuminate\Foundation\Bootstrap\RegisterFacades::class, //注册门面
+        \Illuminate\Foundation\Bootstrap\RegisterProviders::class, //注册服务提供者,config/app.php中的providers中的服务提供者
+        \Illuminate\Foundation\Bootstrap\BootProviders::class, //启动所有的服务提供者
     ];
 
     /**
@@ -66,7 +66,7 @@ class Kernel implements KernelContract
     /**
      * The priority-sorted list of middleware.
      *
-     * Forces non-global middleware to always be in the given order.
+     * Forces the listed middleware to always be in the given order.
      *
      * @var array
      */
@@ -114,6 +114,7 @@ class Kernel implements KernelContract
             $request->enableHttpMethodParameterOverride();
 
             $response = $this->sendRequestThroughRouter($request);
+
         } catch (Exception $e) {
             $this->reportException($e);
 
@@ -124,9 +125,7 @@ class Kernel implements KernelContract
             $response = $this->renderException($request, $e);
         }
 
-        $this->app['events']->dispatch(
-            new Events\RequestHandled($request, $response)
-        );
+        event(new Events\RequestHandled($request, $response));
 
         return $response;
     }
@@ -172,13 +171,12 @@ class Kernel implements KernelContract
     {
         return function ($request) {
             $this->app->instance('request', $request);
-
             return $this->router->dispatch($request);
         };
     }
 
     /**
-     * Call the terminate method on any terminable middleware.
+     * Call the terminate method on any terminable middleware.(在任何可终止的中间件上调动terminate方法)
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Illuminate\Http\Response  $response
@@ -186,6 +184,7 @@ class Kernel implements KernelContract
      */
     public function terminate($request, $response)
     {
+
         $this->terminateMiddleware($request, $response);
 
         $this->app->terminate();
@@ -204,13 +203,12 @@ class Kernel implements KernelContract
             $this->gatherRouteMiddleware($request),
             $this->middleware
         );
-
         foreach ($middlewares as $middleware) {
             if (! is_string($middleware)) {
                 continue;
             }
 
-            [$name] = $this->parseMiddleware($middleware);
+            list($name, $parameters) = $this->parseMiddleware($middleware);
 
             $instance = $this->app->make($name);
 
@@ -236,14 +234,14 @@ class Kernel implements KernelContract
     }
 
     /**
-     * Parse a middleware string to get the name and parameters.
+     * Parse a middleware string to get the name and parameters.(解析中间件，获取名称和参数)
      *
      * @param  string  $middleware
      * @return array
      */
     protected function parseMiddleware($middleware)
     {
-        [$name, $parameters] = array_pad(explode(':', $middleware, 2), 2, []);
+        list($name, $parameters) = array_pad(explode(':', $middleware, 2), 2, []);
 
         if (is_string($parameters)) {
             $parameters = explode(',', $parameters);
@@ -324,16 +322,6 @@ class Kernel implements KernelContract
     protected function renderException($request, Exception $e)
     {
         return $this->app[ExceptionHandler::class]->render($request, $e);
-    }
-
-    /**
-     * Get the application's route middleware groups.
-     *
-     * @return array
-     */
-    public function getMiddlewareGroups()
-    {
-        return $this->middlewareGroups;
     }
 
     /**

@@ -11,11 +11,10 @@
 
 namespace Symfony\Component\Translation\Tests\Loader;
 
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Translation\Loader\CsvFileLoader;
+use Symfony\Component\Config\Resource\FileResource;
 
-class CsvFileLoaderTest extends TestCase
+class CsvFileLoaderTest extends \PHPUnit_Framework_TestCase
 {
     public function testLoad()
     {
@@ -23,9 +22,9 @@ class CsvFileLoaderTest extends TestCase
         $resource = __DIR__.'/../fixtures/resources.csv';
         $catalogue = $loader->load($resource, 'en', 'domain1');
 
-        $this->assertEquals(['foo' => 'bar'], $catalogue->all('domain1'));
+        $this->assertEquals(array('foo' => 'bar'), $catalogue->all('domain1'));
         $this->assertEquals('en', $catalogue->getLocale());
-        $this->assertEquals([new FileResource($resource)], $catalogue->getResources());
+        $this->assertEquals(array(new FileResource($resource)), $catalogue->getResources());
     }
 
     public function testLoadDoesNothingIfEmpty()
@@ -34,9 +33,9 @@ class CsvFileLoaderTest extends TestCase
         $resource = __DIR__.'/../fixtures/empty.csv';
         $catalogue = $loader->load($resource, 'en', 'domain1');
 
-        $this->assertEquals([], $catalogue->all('domain1'));
+        $this->assertEquals(array(), $catalogue->all('domain1'));
         $this->assertEquals('en', $catalogue->getLocale());
-        $this->assertEquals([new FileResource($resource)], $catalogue->getResources());
+        $this->assertEquals(array(new FileResource($resource)), $catalogue->getResources());
     }
 
     /**

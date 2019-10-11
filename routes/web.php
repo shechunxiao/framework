@@ -14,4 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/first','FirstController@index' );
+
+Route::any('/test', 'FirstController@test');
+Route::any('/ceshi', 'Ceshi@index');
+Route::any('/one', 'Test\OneController@index');

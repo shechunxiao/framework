@@ -7,8 +7,6 @@
  * @author   Taylor Otwell <taylor@laravel.com>
  */
 
-define('LARAVEL_START', microtime(true));
-
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader
@@ -17,11 +15,11 @@ define('LARAVEL_START', microtime(true));
 | Composer provides a convenient, automatically generated class loader for
 | our application. We just need to utilize it! We'll simply require it
 | into the script here so that we don't have to worry about manual
-| loading any of our classes later on. It feels great to relax.
+| loading any of our classes later on. It feels nice to relax.
 |
 */
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__.'/../bootstrap/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +52,9 @@ $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
 );
-
+//如果在这之前使用echo，var_dump,print,print_r等则会直接输出
+//send方法是输出return返回的内容
 $response->send();
 
+//最好存储session等操作
 $kernel->terminate($request, $response);

@@ -72,6 +72,11 @@ abstract class AbstractFtpAdapter extends AbstractAdapter
     protected $systemType;
 
     /**
+     * @var bool
+     */
+    protected $alternativeRecursion = false;
+
+    /**
      * @var SafeStorage
      */
     protected $safeStorage;
@@ -218,9 +223,7 @@ abstract class AbstractFtpAdapter extends AbstractAdapter
      */
     public function getUsername()
     {
-        $username = $this->safeStorage->retrieveSafely('username');
-
-        return $username !== null ? $username : 'anonymous';
+        return $this->safeStorage->retrieveSafely('username') ?: 'anonymous';
     }
 
     /**
@@ -335,7 +338,7 @@ abstract class AbstractFtpAdapter extends AbstractAdapter
 
         while ($item = array_shift($listing)) {
             if (preg_match('#^.*:$#', $item)) {
-                $base = preg_replace('~^\./*|:$~', '', $item);
+                $base = trim($item, ':');
                 continue;
             }
 
@@ -404,7 +407,7 @@ abstract class AbstractFtpAdapter extends AbstractAdapter
 
         list($permissions, /* $number */, /* $owner */, /* $group */, $size, /* $month */, /* $day */, /* $time*/, $name) = explode(' ', $item, 9);
         $type = $this->detectType($permissions);
-        $path = $base === '' ? $name : $base . $this->separator . $name;
+        $path = empty($base) ? $name : $base . $this->separator . $name;
 
         if ($type === 'dir') {
             return compact('type', 'path');
@@ -434,7 +437,7 @@ abstract class AbstractFtpAdapter extends AbstractAdapter
         }
 
         list($date, $time, $size, $name) = explode(' ', $item, 4);
-        $path = $base === '' ? $name : $base . $this->separator . $name;
+        $path = empty($base) ? $name : $base . $this->separator . $name;
 
         // Check for the correct date/time format
         $format = strlen($date) === 8 ? 'm-d-yH:iA' : 'Y-m-dH:i';
@@ -502,8 +505,8 @@ abstract class AbstractFtpAdapter extends AbstractAdapter
             return array_sum(str_split($part));
         };
 
-        // converts to decimal number
-        return octdec(implode('', array_map($mapper, $parts)));
+        // get the sum of the groups
+        return array_sum(array_map($mapper, $parts));
     }
 
     /**
@@ -516,7 +519,11 @@ abstract class AbstractFtpAdapter extends AbstractAdapter
     public function removeDotDirectories(array $list)
     {
         $filter = function ($line) {
-            return $line !== '' && ! preg_match('#.* \.(\.)?$|^total#', $line);
+            if ( ! empty($line) && ! preg_match('#.* \.(\.)?$|^total#', $line)) {
+                return true;
+            }
+
+            return false;
         };
 
         return array_filter($list, $filter);
@@ -553,9 +560,7 @@ abstract class AbstractFtpAdapter extends AbstractAdapter
      */
     public function ensureDirectory($dirname)
     {
-        $dirname = (string) $dirname;
-
-        if ($dirname !== '' && ! $this->has($dirname)) {
+        if ( ! empty($dirname) && ! $this->has($dirname)) {
             $this->createDir($dirname, new Config());
         }
     }
@@ -565,10 +570,7 @@ abstract class AbstractFtpAdapter extends AbstractAdapter
      */
     public function getConnection()
     {
-        $tries = 0;
-
-        while ( ! $this->isConnected() && $tries < 3) {
-            $tries++;
+        if ( ! $this->isConnected()) {
             $this->disconnect();
             $this->connect();
         }

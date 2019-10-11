@@ -19,17 +19,17 @@ use Symfony\Component\VarDumper\Dumper\CliDumper;
  */
 trait VarDumperTestTrait
 {
-    public function assertDumpEquals($expected, $data, $filter = 0, $message = '')
+    public function assertDumpEquals($dump, $data, $message = '')
     {
-        $this->assertSame($this->prepareExpectation($expected, $filter), $this->getDump($data, null, $filter), $message);
+        $this->assertSame(rtrim($dump), $this->getDump($data), $message);
     }
 
-    public function assertDumpMatchesFormat($expected, $data, $filter = 0, $message = '')
+    public function assertDumpMatchesFormat($dump, $data, $message = '')
     {
-        $this->assertStringMatchesFormat($this->prepareExpectation($expected, $filter), $this->getDump($data, null, $filter), $message);
+        $this->assertStringMatchesFormat(rtrim($dump), $this->getDump($data), $message);
     }
 
-    protected function getDump($data, $key = null, $filter = 0)
+    protected function getDump($data, $key = null)
     {
         $flags = getenv('DUMP_LIGHT_ARRAY') ? CliDumper::DUMP_LIGHT_ARRAY : 0;
         $flags |= getenv('DUMP_STRING_LENGTH') ? CliDumper::DUMP_STRING_LENGTH : 0;
@@ -38,20 +38,11 @@ trait VarDumperTestTrait
         $cloner->setMaxItems(-1);
         $dumper = new CliDumper(null, null, $flags);
         $dumper->setColors(false);
-        $data = $cloner->cloneVar($data, $filter)->withRefHandles(false);
+        $data = $cloner->cloneVar($data)->withRefHandles(false);
         if (null !== $key && null === $data = $data->seek($key)) {
             return;
         }
 
         return rtrim($dumper->dump($data, true));
-    }
-
-    private function prepareExpectation($expected, $filter)
-    {
-        if (!\is_string($expected)) {
-            $expected = $this->getDump($expected, null, $filter);
-        }
-
-        return rtrim($expected);
     }
 }

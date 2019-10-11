@@ -11,15 +11,14 @@
 
 namespace Symfony\Component\HttpKernel\Tests\Fragment;
 
-use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\Fragment\FragmentHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Fragment\FragmentHandler;
 
 /**
  * @group time-sensitive
  */
-class FragmentHandlerTest extends TestCase
+class FragmentHandlerTest extends \PHPUnit_Framework_TestCase
 {
     private $requestStack;
 
@@ -68,12 +67,12 @@ class FragmentHandlerTest extends TestCase
 
     public function testRender()
     {
-        $handler = $this->getHandler($this->returnValue(new Response('foo')), ['/', Request::create('/'), ['foo' => 'foo', 'ignore_errors' => true]]);
+        $handler = $this->getHandler($this->returnValue(new Response('foo')), array('/', Request::create('/'), array('foo' => 'foo', 'ignore_errors' => true)));
 
-        $this->assertEquals('foo', $handler->render('/', 'foo', ['foo' => 'foo']));
+        $this->assertEquals('foo', $handler->render('/', 'foo', array('foo' => 'foo')));
     }
 
-    protected function getHandler($returnValue, $arguments = [])
+    protected function getHandler($returnValue, $arguments = array())
     {
         $renderer = $this->getMockBuilder('Symfony\Component\HttpKernel\Fragment\FragmentRendererInterface')->getMock();
         $renderer
@@ -88,7 +87,7 @@ class FragmentHandlerTest extends TestCase
         ;
 
         if ($arguments) {
-            $e->with(...$arguments);
+            call_user_func_array(array($e, 'with'), $arguments);
         }
 
         $handler = new FragmentHandler($this->requestStack);

@@ -2,14 +2,13 @@
 
 namespace Symfony\Component\Console\Tests\Helper;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\ProgressIndicator;
 use Symfony\Component\Console\Output\StreamOutput;
 
 /**
  * @group time-sensitive
  */
-class ProgressIndicatorTest extends TestCase
+class ProgressIndicatorTest extends \PHPUnit_Framework_TestCase
 {
     public function testDefaultIndicator()
     {
@@ -79,7 +78,7 @@ class ProgressIndicatorTest extends TestCase
 
     public function testCustomIndicatorValues()
     {
-        $bar = new ProgressIndicator($output = $this->getOutputStream(), null, 100, ['a', 'b', 'c']);
+        $bar = new ProgressIndicator($output = $this->getOutputStream(), null, 100, array('a', 'b', 'c'));
 
         $bar->start('Starting...');
         usleep(101000);
@@ -106,7 +105,7 @@ class ProgressIndicatorTest extends TestCase
      */
     public function testCannotSetInvalidIndicatorCharacters()
     {
-        $bar = new ProgressIndicator($this->getOutputStream(), null, 100, ['1']);
+        $bar = new ProgressIndicator($this->getOutputStream(), null, 100, array('1'));
     }
 
     /**
@@ -161,12 +160,12 @@ class ProgressIndicatorTest extends TestCase
      */
     public function provideFormat()
     {
-        return [
-            ['normal'],
-            ['verbose'],
-            ['very_verbose'],
-            ['debug'],
-        ];
+        return array(
+            array('normal'),
+            array('verbose'),
+            array('very_verbose'),
+            array('debug'),
+        );
     }
 
     protected function getOutputStream($decorated = true, $verbosity = StreamOutput::VERBOSITY_NORMAL)

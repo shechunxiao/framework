@@ -11,11 +11,10 @@
 
 namespace Symfony\Component\Console\Tests\Formatter;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
-class OutputFormatterTest extends TestCase
+class OutputFormatterTest extends \PHPUnit_Framework_TestCase
 {
     public function testEmptyTag()
     {
@@ -28,9 +27,6 @@ class OutputFormatterTest extends TestCase
         $formatter = new OutputFormatter(true);
 
         $this->assertEquals('foo<bar', $formatter->format('foo\\<bar'));
-        $this->assertEquals('foo << bar', $formatter->format('foo << bar'));
-        $this->assertEquals('foo << bar \\', $formatter->format('foo << bar \\'));
-        $this->assertEquals("foo << \033[32mbar \\ baz\033[39m \\", $formatter->format('foo << <info>bar \\ baz</info> \\'));
         $this->assertEquals('<info>some info</info>', $formatter->format('\\<info>some info\\</info>'));
         $this->assertEquals('\\<info>some info\\</info>', OutputFormatter::escape('<info>some info</info>'));
 
@@ -184,26 +180,37 @@ class OutputFormatterTest extends TestCase
 
     public function provideInlineStyleOptionsCases()
     {
-        return [
-            ['<unknown=_unknown_>'],
-            ['<unknown=_unknown_;a=1;b>'],
-            ['<fg=green;>', "\033[32m[test]\033[39m", '[test]'],
-            ['<fg=green;bg=blue;>', "\033[32;44ma\033[39;49m", 'a'],
-            ['<fg=green;options=bold>', "\033[32;1mb\033[39;22m", 'b'],
-            ['<fg=green;options=reverse;>', "\033[32;7m<a>\033[39;27m", '<a>'],
-            ['<fg=green;options=bold,underscore>', "\033[32;1;4mz\033[39;22;24m", 'z'],
-            ['<fg=green;options=bold,underscore,reverse;>', "\033[32;1;4;7md\033[39;22;24;27m", 'd'],
-        ];
+        return array(
+            array('<unknown=_unknown_>'),
+            array('<unknown=_unknown_;a=1;b>'),
+            array('<fg=green;>', "\033[32m[test]\033[39m", '[test]'),
+            array('<fg=green;bg=blue;>', "\033[32;44ma\033[39;49m", 'a'),
+            array('<fg=green;options=bold>', "\033[32;1mb\033[39;22m", 'b'),
+            array('<fg=green;options=reverse;>', "\033[32;7m<a>\033[39;27m", '<a>'),
+            array('<fg=green;options=bold,underscore>', "\033[32;1;4mz\033[39;22;24m", 'z'),
+            array('<fg=green;options=bold,underscore,reverse;>', "\033[32;1;4;7md\033[39;22;24;27m", 'd'),
+        );
+    }
+
+    /**
+     * @group legacy
+     * @dataProvider provideInlineStyleTagsWithUnknownOptions
+     * @expectedDeprecation Unknown style options are deprecated since version 3.2 and will be removed in 4.0. Exception "Invalid option specified: "%s". Expected one of (bold, underscore, blink, reverse, conceal)".
+     */
+    public function testInlineStyleOptionsUnknownAreDeprecated($tag, $option)
+    {
+        $formatter = new OutputFormatter(true);
+        $formatter->format($tag);
     }
 
     public function provideInlineStyleTagsWithUnknownOptions()
     {
-        return [
-            ['<options=abc;>', 'abc'],
-            ['<options=abc,def;>', 'abc'],
-            ['<fg=green;options=xyz;>', 'xyz'],
-            ['<fg=green;options=efg,abc>', 'efg'],
-        ];
+        return array(
+            array('<options=abc;>', 'abc'),
+            array('<options=abc,def;>', 'abc'),
+            array('<fg=green;options=xyz;>', 'xyz'),
+            array('<fg=green;options=efg,abc>', 'efg'),
+        );
     }
 
     public function testNonStyleTag()
@@ -249,9 +256,6 @@ class OutputFormatterTest extends TestCase
         $this->assertEquals(
             'some question', $formatter->format('<question>some question</question>')
         );
-        $this->assertEquals(
-            'some text with inline style', $formatter->format('<fg=red>some text with inline style</>')
-        );
 
         $formatter->setDecorated(true);
 
@@ -266,9 +270,6 @@ class OutputFormatterTest extends TestCase
         );
         $this->assertEquals(
             "\033[30;46msome question\033[39;49m", $formatter->format('<question>some question</question>')
-        );
-        $this->assertEquals(
-            "\033[31msome text with inline style\033[39m", $formatter->format('<fg=red>some text with inline style</>')
         );
     }
 
@@ -321,25 +322,6 @@ more text
 </info>
 EOF
         ));
-    }
-
-    public function testFormatAndWrap()
-    {
-        $formatter = new OutputFormatter(true);
-
-        $this->assertSame("fo\no\e[37;41mb\e[39;49m\n\e[37;41mar\e[39;49m\nba\nz", $formatter->formatAndWrap('foo<error>bar</error> baz', 2));
-        $this->assertSame("pr\ne \e[37;41m\e[39;49m\n\e[37;41mfo\e[39;49m\n\e[37;41mo \e[39;49m\n\e[37;41mba\e[39;49m\n\e[37;41mr \e[39;49m\n\e[37;41mba\e[39;49m\n\e[37;41mz\e[39;49m \npo\nst", $formatter->formatAndWrap('pre <error>foo bar baz</error> post', 2));
-        $this->assertSame("pre\e[37;41m\e[39;49m\n\e[37;41mfoo\e[39;49m\n\e[37;41mbar\e[39;49m\n\e[37;41mbaz\e[39;49m\npos\nt", $formatter->formatAndWrap('pre <error>foo bar baz</error> post', 3));
-        $this->assertSame("pre \e[37;41m\e[39;49m\n\e[37;41mfoo \e[39;49m\n\e[37;41mbar \e[39;49m\n\e[37;41mbaz\e[39;49m \npost", $formatter->formatAndWrap('pre <error>foo bar baz</error> post', 4));
-        $this->assertSame("pre \e[37;41mf\e[39;49m\n\e[37;41moo ba\e[39;49m\n\e[37;41mr baz\e[39;49m\npost", $formatter->formatAndWrap('pre <error>foo bar baz</error> post', 5));
-
-        $formatter = new OutputFormatter();
-
-        $this->assertSame("fo\nob\nar\nba\nz", $formatter->formatAndWrap('foo<error>bar</error> baz', 2));
-        $this->assertSame("pr\ne \nfo\no \nba\nr \nba\nz \npo\nst", $formatter->formatAndWrap('pre <error>foo bar baz</error> post', 2));
-        $this->assertSame("pre\nfoo\nbar\nbaz\npos\nt", $formatter->formatAndWrap('pre <error>foo bar baz</error> post', 3));
-        $this->assertSame("pre \nfoo \nbar \nbaz \npost", $formatter->formatAndWrap('pre <error>foo bar baz</error> post', 4));
-        $this->assertSame("pre f\noo ba\nr baz\npost", $formatter->formatAndWrap('pre <error>foo bar baz</error> post', 5));
     }
 }
 

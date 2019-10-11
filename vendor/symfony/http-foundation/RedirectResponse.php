@@ -32,7 +32,7 @@ class RedirectResponse extends Response
      *
      * @see http://tools.ietf.org/html/rfc2616#section-10.3
      */
-    public function __construct(?string $url, int $status = 302, array $headers = [])
+    public function __construct($url, $status = 302, $headers = array())
     {
         parent::__construct('', $status, $headers);
 
@@ -48,15 +48,9 @@ class RedirectResponse extends Response
     }
 
     /**
-     * Factory method for chainability.
-     *
-     * @param string $url     The url to redirect to
-     * @param int    $status  The response status code
-     * @param array  $headers An array of response headers
-     *
-     * @return static
+     * {@inheritdoc}
      */
-    public static function create($url = '', $status = 302, $headers = [])
+    public static function create($url = '', $status = 302, $headers = array())
     {
         return new static($url, $status, $headers);
     }
@@ -93,7 +87,7 @@ class RedirectResponse extends Response
 <html>
     <head>
         <meta charset="UTF-8" />
-        <meta http-equiv="refresh" content="0;url=%1$s" />
+        <meta http-equiv="refresh" content="1;url=%1$s" />
 
         <title>Redirecting to %1$s</title>
     </head>

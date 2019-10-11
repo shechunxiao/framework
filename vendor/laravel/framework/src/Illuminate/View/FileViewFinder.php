@@ -53,7 +53,7 @@ class FileViewFinder implements ViewFinderInterface
     public function __construct(Filesystem $files, array $paths, array $extensions = null)
     {
         $this->files = $files;
-        $this->paths = array_map([$this, 'resolvePath'], $paths);
+        $this->paths = $paths;
 
         if (isset($extensions)) {
             $this->extensions = $extensions;
@@ -87,7 +87,7 @@ class FileViewFinder implements ViewFinderInterface
      */
     protected function findNamespacedView($name)
     {
-        [$namespace, $view] = $this->parseNamespaceSegments($name);
+        list($namespace, $view) = $this->parseNamespaceSegments($name);
 
         return $this->findInPaths($view, $this->hints[$namespace]);
     }
@@ -104,8 +104,8 @@ class FileViewFinder implements ViewFinderInterface
     {
         $segments = explode(static::HINT_PATH_DELIMITER, $name);
 
-        if (count($segments) !== 2) {
-            throw new InvalidArgumentException("View [{$name}] has an invalid name.");
+        if (count($segments) != 2) {
+            throw new InvalidArgumentException("View [$name] has an invalid name.");
         }
 
         if (! isset($this->hints[$segments[0]])) {
@@ -134,7 +134,7 @@ class FileViewFinder implements ViewFinderInterface
             }
         }
 
-        throw new InvalidArgumentException("View [{$name}] not found.");
+        throw new InvalidArgumentException("View [$name] not found.");
     }
 
     /**
@@ -158,7 +158,7 @@ class FileViewFinder implements ViewFinderInterface
      */
     public function addLocation($location)
     {
-        $this->paths[] = $this->resolvePath($location);
+        $this->paths[] = $location;
     }
 
     /**
@@ -169,18 +169,7 @@ class FileViewFinder implements ViewFinderInterface
      */
     public function prependLocation($location)
     {
-        array_unshift($this->paths, $this->resolvePath($location));
-    }
-
-    /**
-     * Resolve the path.
-     *
-     * @param  string  $path
-     * @return string
-     */
-    protected function resolvePath($path)
-    {
-        return realpath($path) ?: $path;
+        array_unshift($this->paths, $location);
     }
 
     /**
@@ -275,19 +264,6 @@ class FileViewFinder implements ViewFinderInterface
     public function getFilesystem()
     {
         return $this->files;
-    }
-
-    /**
-     * Set the active view paths.
-     *
-     * @param  array  $paths
-     * @return $this
-     */
-    public function setPaths($paths)
-    {
-        $this->paths = $paths;
-
-        return $this;
     }
 
     /**

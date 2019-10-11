@@ -11,16 +11,15 @@
 
 namespace Symfony\Component\HttpKernel\Tests\CacheWarmer;
 
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerAggregate;
 
-class CacheWarmerAggregateTest extends TestCase
+class CacheWarmerAggregateTest extends \PHPUnit_Framework_TestCase
 {
     protected static $cacheDir;
 
     public static function setUpBeforeClass()
     {
-        self::$cacheDir = tempnam(sys_get_temp_dir(), 'sf_cache_warmer_dir');
+        self::$cacheDir = tempnam(sys_get_temp_dir(), 'sf2_cache_warmer_dir');
     }
 
     public static function tearDownAfterClass()
@@ -34,7 +33,29 @@ class CacheWarmerAggregateTest extends TestCase
         $warmer
             ->expects($this->once())
             ->method('warmUp');
-        $aggregate = new CacheWarmerAggregate([$warmer]);
+        $aggregate = new CacheWarmerAggregate(array($warmer));
+        $aggregate->warmUp(self::$cacheDir);
+    }
+
+    public function testInjectWarmersUsingAdd()
+    {
+        $warmer = $this->getCacheWarmerMock();
+        $warmer
+            ->expects($this->once())
+            ->method('warmUp');
+        $aggregate = new CacheWarmerAggregate();
+        $aggregate->add($warmer);
+        $aggregate->warmUp(self::$cacheDir);
+    }
+
+    public function testInjectWarmersUsingSetWarmers()
+    {
+        $warmer = $this->getCacheWarmerMock();
+        $warmer
+            ->expects($this->once())
+            ->method('warmUp');
+        $aggregate = new CacheWarmerAggregate();
+        $aggregate->setWarmers(array($warmer));
         $aggregate->warmUp(self::$cacheDir);
     }
 
@@ -48,7 +69,7 @@ class CacheWarmerAggregateTest extends TestCase
             ->expects($this->once())
             ->method('warmUp');
 
-        $aggregate = new CacheWarmerAggregate([$warmer]);
+        $aggregate = new CacheWarmerAggregate(array($warmer));
         $aggregate->enableOptionalWarmers();
         $aggregate->warmUp(self::$cacheDir);
     }
@@ -64,7 +85,7 @@ class CacheWarmerAggregateTest extends TestCase
             ->expects($this->never())
             ->method('warmUp');
 
-        $aggregate = new CacheWarmerAggregate([$warmer]);
+        $aggregate = new CacheWarmerAggregate(array($warmer));
         $aggregate->warmUp(self::$cacheDir);
     }
 
