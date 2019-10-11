@@ -18,7 +18,9 @@
 | loading any of our classes later on. It feels nice to relax.
 |
 */
-
+/**
+ * 引入composer的自动加载，所谓自动加载就是自动帮我们引入类，比如require xxx.php
+ */
 require __DIR__.'/../bootstrap/autoload.php';
 
 /*
@@ -32,7 +34,9 @@ require __DIR__.'/../bootstrap/autoload.php';
 | the responses back to the browser and delight our users.
 |
 */
-
+/**
+ * 获取App实例，并且参数绑定一些常用的服务
+ */
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
 /*
@@ -46,15 +50,24 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 | and wonderful application we have prepared for them.
 |
 */
-
+/**
+ * make作用是实例化，这里是实例化Illuminate\Contracts\Http\Kernel的抽象类,从而实现后面的调动
+ */
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
+/**
+ * 获取request和response实例
+ */
 $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
 );
-//如果在这之前使用echo，var_dump,print,print_r等则会直接输出
-//send方法是输出return返回的内容
+/**
+ * 如果在这之前使用echo，var_dump,print,print_r等则会直接输出
+ * send方法是输出return返回的内容,可以参考thinkphp的实现方法
+ */
 $response->send();
 
-//最好存储session等操作
+/**
+ * 存储session等操作
+ */
 $kernel->terminate($request, $response);
