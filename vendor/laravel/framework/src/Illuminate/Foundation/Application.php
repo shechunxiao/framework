@@ -645,7 +645,7 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
     }
 
     /**
-     * Load the provider for a deferred service.
+     * Load the provider for a deferred service.(加载延迟服务者,这里实现了延迟服务的加载)
      *
      * @param  string  $service
      * @return void
@@ -657,17 +657,17 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
         }
 
         $provider = $this->deferredServices[$service];
-
         // If the service provider has not already been loaded and registered we can
         // register it with the application and remove the service from this list
         // of deferred services, since it will already be loaded on subsequent.
+        //如果这个服务提供者没有注册，那么我们可以注册它，并且从延迟加载列表中删除调，因为随后会加载它。
         if (! isset($this->loadedProviders[$provider])) {
             $this->registerDeferredProvider($provider, $service);
         }
     }
 
     /**
-     * Register a deferred provider and service.
+     * Register a deferred provider and service.(注册一个延迟加载服务)
      *
      * @param  string  $provider
      * @param  string  $service
@@ -682,9 +682,9 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
             unset($this->deferredServices[$service]);
         }
 
-        $this->register($instance = new $provider($this));
+        $this->register($instance = new $provider($this)); //这里注册该延迟加载服务
 
-        if (! $this->booted) {
+        if (! $this->booted) { //如果没有启动，则启动这个延迟加载服务
             $this->booting(function () use ($instance) {
                 $this->bootProvider($instance);
             });
@@ -703,10 +703,9 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
     {
         $abstract = $this->getAlias($abstract);
 
-        if (isset($this->deferredServices[$abstract])) {
+        if (isset($this->deferredServices[$abstract])) { //如果是延迟加载服务，则加载该服务
             $this->loadDeferredProvider($abstract);
         }
-
         return parent::make($abstract);
     }
 
