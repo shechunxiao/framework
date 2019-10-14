@@ -60,7 +60,7 @@ class RouteServiceProvider extends ServiceProvider
     }
 
     /**
-     * Load the application routes.
+     * Load the application routes.(加载应用路由)
      *
      * @return void
      */

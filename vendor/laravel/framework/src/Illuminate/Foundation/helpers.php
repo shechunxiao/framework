@@ -713,6 +713,7 @@ if (! function_exists('response')) {
         if (func_num_args() === 0) {
             return $factory;
         }
+        var_dump(1111);
 
         return $factory->make($content, $status, $headers);
     }

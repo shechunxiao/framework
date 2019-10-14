@@ -16,6 +16,7 @@ class FirstController extends Controller
 //    }
     //
     public function test(InterfaceTest $interfaceTest,Request $request){
+        return 222;
 //        return 22343243232;
 //        $select = DB::table('first')->where([
 //            ['id','>',1],

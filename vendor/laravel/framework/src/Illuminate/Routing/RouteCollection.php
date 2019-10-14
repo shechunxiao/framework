@@ -52,12 +52,12 @@ class RouteCollection implements Countable, IteratorAggregate
         $this->addToCollections($route);
 
         $this->addLookups($route);
-
+        
         return $route;
     }
 
     /**
-     * Add the given route to the arrays of routes.
+     * Add the given route to the arrays of routes.(添加一个给定的路由到路由数组)
      *
      * @param  \Illuminate\Routing\Route  $route
      * @return void
@@ -65,7 +65,6 @@ class RouteCollection implements Countable, IteratorAggregate
     protected function addToCollections($route)
     {
         $domainAndUri = $route->domain().$route->uri();
-
         foreach ($route->methods() as $method) {
             $this->routes[$method][$domainAndUri] = $route;
         }
@@ -74,7 +73,8 @@ class RouteCollection implements Countable, IteratorAggregate
     }
 
     /**
-     * Add the route to any look-up tables if necessary.
+     * Add the route to any look-up tables if necessary.(这个函数的作用是，当一个路由有name时，就可以根据name
+     * 快速的定位路由，而不用每次都需要遍历路由表来查找路由了)
      *
      * @param  \Illuminate\Routing\Route  $route
      * @return void

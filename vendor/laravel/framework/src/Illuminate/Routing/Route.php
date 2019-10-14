@@ -666,7 +666,7 @@ class Route
     public function setAction(array $action)
     {
         $this->action = $action;
-
+        
         return $this;
     }
 

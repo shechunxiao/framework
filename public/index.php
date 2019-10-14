@@ -54,7 +54,6 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
  * make作用是实例化，这里是实例化Illuminate\Contracts\Http\Kernel的抽象类,从而实现后面的调动
  */
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-var_dump($kernel);
 
 /**
  * 获取request和response实例
@@ -66,6 +65,7 @@ $response = $kernel->handle(
  * 如果在这之前使用echo，var_dump,print,print_r等则会直接输出
  * send方法是输出return返回的内容,可以参考thinkphp的实现方法
  */
+
 $response->send();
 
 /**

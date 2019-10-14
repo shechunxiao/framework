@@ -24,12 +24,11 @@ class RouteServiceProvider extends ServiceProvider
     public function boot()
     {
         //
-
         parent::boot();
     }
 
     /**
-     * Define the routes for the application.
+     * Define the routes for the application.(定义app路由)
      *
      * @return void
      */
@@ -46,7 +45,7 @@ class RouteServiceProvider extends ServiceProvider
      * Define the "web" routes for the application.
      *
      * These routes all receive session state, CSRF protection, etc.
-     *
+     *所谓的路由加载，就是将定义路由时添加的属性，例如 'name'、'domain'、'scheme' 等等保存起来，以待后用。
      * @return void
      */
     protected function mapWebRoutes()

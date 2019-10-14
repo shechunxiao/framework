@@ -131,7 +131,7 @@ class Kernel implements KernelContract
     }
 
     /**
-     * Send the given request through the middleware / router.
+     * Send the given request through the middleware / router. (通过中间件或者路由发送请求)
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -142,8 +142,9 @@ class Kernel implements KernelContract
 
         Facade::clearResolvedInstance('request');
 
-        $this->bootstrap();
+        $this->bootstrap(); //启动了服务容器
 
+        //下面是通过管道什么的分发请求(即分发到哪个控制器的哪个方法)，也就是获取到最后的$content
         return (new Pipeline($this->app))
                     ->send($request)
                     ->through($this->app->shouldSkipMiddleware() ? [] : $this->middleware)
@@ -163,7 +164,7 @@ class Kernel implements KernelContract
     }
 
     /**
-     * Get the route dispatcher callback.
+     * Get the route dispatcher callback. 获取一个路由分发的回调
      *
      * @return \Closure
      */

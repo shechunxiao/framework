@@ -546,7 +546,6 @@ class Container implements ArrayAccess, ContainerContract
      */
     public function make($abstract)
     {
-        var_dump($abstract);
         //这里判断是否需要上下文绑定，所谓上下文绑定，就是在不同的情境下，比如不同的类的调用，针对的是不同的实现
         //比如有两个类，都是注入了Log接口，但是这两个接口的实现不同，比如前者使用FirstLog,后者使用SecondLog,这就是所谓的上下文绑定
         $needsContextualBuild = ! is_null(

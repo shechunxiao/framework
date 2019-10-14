@@ -357,10 +357,11 @@ class Router implements RegistrarContract, BindingRegistrar
         // If the route is routing to a controller we will parse the route action into
         // an acceptable array format before registering it and creating this route
         // instance itself. We need to build the Closure that will call this out.
+        //如果是路由到控制器，那么就进行相关的处理
         if ($this->actionReferencesController($action)) {
             $action = $this->convertToControllerAction($action);
         }
-
+        //实例化路由对象
         $route = $this->newRoute(
             $methods, $this->prefix($uri), $action
         );
@@ -368,6 +369,8 @@ class Router implements RegistrarContract, BindingRegistrar
         // If we have groups that need to be merged, we will merge them now after this
         // route has already been created and is ready to go. After we're done with
         // the merge we will be ready to return the route back out to the caller.
+        //如果有分组需要合并的话，那么我们在创建一个路由以后合并他们。在我们合并好了以后，我们已经
+        //准备好了将这个路由返回给回调者
         if ($this->hasGroupStack()) {
             $this->mergeGroupAttributesIntoRoute($route);
         }
@@ -378,7 +381,9 @@ class Router implements RegistrarContract, BindingRegistrar
     }
 
     /**
-     * Determine if the action is routing to a controller.
+     * Determine if the action is routing to a controller.(判断这个action是否路由到了控制器)
+     * 比如Route::any('/one', 'Test\OneController@index');这里的'Test\OneController@index'就是action
+     * 这里路由到了控制器
      *
      * @param  array  $action
      * @return bool
@@ -407,6 +412,7 @@ class Router implements RegistrarContract, BindingRegistrar
         // Here we'll merge any group "uses" statement if necessary so that the action
         // has the proper clause for this property. Then we can simply set the name
         // of the controller on the action and return the action array for usage.
+        //如果使用的group分组，那么我们要加上分组的命名空间
         if (! empty($this->groupStack)) {
             $action['uses'] = $this->prependGroupNamespace($action['uses']);
         }
@@ -415,12 +421,11 @@ class Router implements RegistrarContract, BindingRegistrar
         // have a copy of it for reference if we need it. This can be used while we
         // search for a controller name or do some other type of fetch operation.
         $action['controller'] = $action['uses'];
-
         return $action;
     }
 
     /**
-     * Prepend the last group namespace onto the use clause.
+     * Prepend the last group namespace onto the use clause.(添加分组的命名空间)
      *
      * @param  string  $class
      * @return string
@@ -499,7 +504,7 @@ class Router implements RegistrarContract, BindingRegistrar
     }
 
     /**
-     * Dispatch the request to a route and return the response.
+     * Dispatch the request to a route and return the response.(分发一个请求到路由，并且返回这个响应)
      *
      * @param  \Illuminate\Http\Request  $request
      * @return mixed
@@ -509,6 +514,7 @@ class Router implements RegistrarContract, BindingRegistrar
         // First we will find a route that matches this request. We will also set the
         // route resolver on the request so middlewares assigned to the route will
         // receive access to this route instance for checking of the parameters.
+        //首先我们先查找匹配这个请求的路由
         $route = $this->findRoute($request);
 
         $request->setRouteResolver(function () use ($route) {

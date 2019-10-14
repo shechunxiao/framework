@@ -13,13 +13,13 @@ use Illuminate\Contracts\Routing\ResponseFactory as ResponseFactoryContract;
 class RoutingServiceProvider extends ServiceProvider
 {
     /**
-     * Register the service provider.
+     * Register the service provider.(注册服务容器提供者)
      *
      * @return void
      */
     public function register()
     {
-        $this->registerRouter();
+        $this->registerRouter(); //这里是注册路由服务提供者
 
         $this->registerUrlGenerator();
 

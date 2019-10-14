@@ -925,6 +925,7 @@ class Request
             $this->baseUrl = $this->prepareBaseUrl();
         }
 
+
         return $this->baseUrl;
     }
 

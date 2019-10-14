@@ -200,7 +200,7 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
     }
 
     /**
-     * Run the given array of bootstrap classes.
+     * Run the given array of bootstrap classes.(运行给定的启动类)
      *
      * @param  array  $bootstrappers
      * @return void
@@ -208,7 +208,6 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
     public function bootstrapWith(array $bootstrappers)
     {
         $this->hasBeenBootstrapped = true;
-
         foreach ($bootstrappers as $bootstrapper) {
             $this['events']->fire('bootstrapping: '.$bootstrapper, [$this]);
 
@@ -790,7 +789,6 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
     public function booted($callback)
     {
         $this->bootedCallbacks[] = $callback;
-
         if ($this->isBooted()) {
             $this->fireAppCallbacks([$callback]);
         }

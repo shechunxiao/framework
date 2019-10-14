@@ -42,11 +42,9 @@ class JsonResponse extends Response
     public function __construct($data = null, $status = 200, $headers = array(), $json = false)
     {
         parent::__construct('', $status, $headers);
-
         if (null === $data) {
             $data = new \ArrayObject();
         }
-
         $json ? $this->setJson($data) : $this->setData($data);
     }
 
@@ -124,7 +122,6 @@ class JsonResponse extends Response
     public function setJson($json)
     {
         $this->data = $json;
-
         return $this->update();
     }
 
@@ -161,7 +158,6 @@ class JsonResponse extends Response
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new \InvalidArgumentException(json_last_error_msg());
         }
-
         return $this->setJson($data);
     }
 
