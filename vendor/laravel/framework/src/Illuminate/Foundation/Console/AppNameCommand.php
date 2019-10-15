@@ -76,7 +76,6 @@ class AppNameCommand extends Command
         $this->setDatabaseFactoryNamespaces();
 
         $this->info('Application namespace set!');
-
         $this->composer->dumpAutoloads();
 
         $this->call('clear-compiled');

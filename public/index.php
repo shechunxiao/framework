@@ -54,7 +54,6 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
  * make作用是实例化，这里是实例化Illuminate\Contracts\Http\Kernel的抽象类,从而实现后面的调动
  */
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-
 /**
  * 获取request和response实例
  */

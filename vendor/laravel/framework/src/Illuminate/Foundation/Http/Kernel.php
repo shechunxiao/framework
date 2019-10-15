@@ -110,6 +110,7 @@ class Kernel implements KernelContract
      */
     public function handle($request)
     {
+        echo '到这了';
         try {
             $request->enableHttpMethodParameterOverride();
 
