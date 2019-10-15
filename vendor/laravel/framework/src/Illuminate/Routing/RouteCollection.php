@@ -138,11 +138,12 @@ class RouteCollection implements Countable, IteratorAggregate
      */
     public function match(Request $request)
     {
-        $routes = $this->get($request->getMethod());
+        $routes = $this->get($request->getMethod()); //获取所有method方法注册的路由
 
         // First, we will see if we can find a matching route for this current request
         // method. If we can, great, we can just return it so that it can be called
         // by the consumer. Otherwise we will check for routes with another verb.
+        //首先，我们判断对于当前请求的方法是否有匹配的路由
         $route = $this->matchAgainstRoutes($routes, $request);
 
         if (! is_null($route)) {
@@ -162,7 +163,7 @@ class RouteCollection implements Countable, IteratorAggregate
     }
 
     /**
-     * Determine if a route in the array matches the request.
+     * Determine if a route in the array matches the request.(判断是否路由数组中有匹配请求的路由)
      *
      * @param  array  $routes
      * @param  \Illuminate\http\Request  $request

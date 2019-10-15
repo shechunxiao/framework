@@ -516,20 +516,22 @@ class Router implements RegistrarContract, BindingRegistrar
         // receive access to this route instance for checking of the parameters.
         //首先我们先查找匹配这个请求的路由
         $route = $this->findRoute($request);
-
+        //设置路由解析者
         $request->setRouteResolver(function () use ($route) {
             return $route;
         });
-
+        //调用事件及事件监听
         $this->events->dispatch(new Events\RouteMatched($route, $request));
 
+        //获取最好的response响应
         $response = $this->runRouteWithinStack($route, $request);
-        
+
+        //输出之前的一系列处理，使用的composer扩展包
         return $this->prepareResponse($request, $response);
     }
 
     /**
-     * Find the route matching a given request.
+     * Find the route matching a given request.(查找给定请求的路由)
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Routing\Route
@@ -544,7 +546,7 @@ class Router implements RegistrarContract, BindingRegistrar
     }
 
     /**
-     * Run the given route within a Stack "onion" instance.
+     * Run the given route within a Stack "onion" instance.(在一系列实例中运行给定的路由)
      *
      * @param  \Illuminate\Routing\Route  $route
      * @param  \Illuminate\Http\Request  $request
@@ -556,7 +558,6 @@ class Router implements RegistrarContract, BindingRegistrar
                                 $this->container->make('middleware.disable') === true;
 
         $middleware = $shouldSkipMiddleware ? [] : $this->gatherRouteMiddleware($route);
-
         return (new Pipeline($this->container))
                         ->send($request)
                         ->through($middleware)
@@ -607,7 +608,6 @@ class Router implements RegistrarContract, BindingRegistrar
         } elseif (! $response instanceof SymfonyResponse) {
             $response = new Response($response);
         }
-
         return $response->prepare($request);
     }
 

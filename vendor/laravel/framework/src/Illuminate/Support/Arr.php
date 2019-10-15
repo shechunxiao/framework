@@ -148,7 +148,6 @@ class Arr
                 return $value;
             }
         }
-
         return value($default);
     }
 

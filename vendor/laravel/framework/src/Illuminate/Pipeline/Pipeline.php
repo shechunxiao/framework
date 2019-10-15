@@ -62,7 +62,7 @@ class Pipeline implements PipelineContract
     }
 
     /**
-     * Set the array of pipes.
+     * Set the array of pipes.(设置管道数组)
      *
      * @param  array|mixed  $pipes
      * @return $this
@@ -88,7 +88,7 @@ class Pipeline implements PipelineContract
     }
 
     /**
-     * Run the pipeline with a final destination callback.
+     * Run the pipeline with a final destination callback.(通过一个最终的回调运行管道)
      *
      * @param  \Closure  $destination
      * @return mixed

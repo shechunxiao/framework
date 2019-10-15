@@ -16,7 +16,8 @@ class FirstController extends Controller
 //    }
     //
     public function test(InterfaceTest $interfaceTest,Request $request){
-        return 222;
+        $content = '<div style="background: red">张三</div>';
+        return $content;
 //        return 22343243232;
 //        $select = DB::table('first')->where([
 //            ['id','>',1],

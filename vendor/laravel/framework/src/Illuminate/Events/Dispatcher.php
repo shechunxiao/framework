@@ -173,7 +173,7 @@ class Dispatcher implements DispatcherContract
     }
 
     /**
-     * Fire an event and call the listeners.
+     * Fire an event and call the listeners.(触发事件并调用监听)
      *
      * @param  string|object  $event
      * @param  mixed  $payload
@@ -182,9 +182,11 @@ class Dispatcher implements DispatcherContract
      */
     public function dispatch($event, $payload = [], $halt = false)
     {
+        //总纲，这个分发是通过事件，监听来完成的
         // When the given "event" is actually an object we will assume it is an event
         // object and use the class as the event name and this event itself as the
         // payload to the handler, which makes object based events quite simple.
+        //如果这个给定的事件是一个对象
         list($event, $payload) = $this->parseEventAndPayload(
             $event, $payload
         );
@@ -214,7 +216,6 @@ class Dispatcher implements DispatcherContract
 
             $responses[] = $response;
         }
-
         return $halt ? null : $responses;
     }
 
@@ -235,7 +236,7 @@ class Dispatcher implements DispatcherContract
     }
 
     /**
-     * Determine if the payload has a broadcastable event.
+     * Determine if the payload has a broadcastable event.(判断这个载荷是否有广播事件)
      *
      * @param  array  $payload
      * @return bool

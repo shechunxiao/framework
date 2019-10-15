@@ -191,7 +191,7 @@ class Route
     }
 
     /**
-     * Run the route action and return the response.
+     * Run the route action and return the response.(执行一个route的方法，并返回一个响应)
      *
      * @return mixed
      *
@@ -266,6 +266,7 @@ class Route
 
     /**
      * Compile the route into a Symfony CompiledRoute instance.
+     * 将路由编译为Symfony CompiledRoute实例
      *
      * @return void
      */
@@ -274,7 +275,6 @@ class Route
         if (! $this->compiled) {
             $this->compiled = (new RouteCompiler($this))->compile();
         }
-
         return $this->compiled;
     }
 
