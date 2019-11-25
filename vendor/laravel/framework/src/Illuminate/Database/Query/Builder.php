@@ -322,7 +322,6 @@ class Builder
     public function from($table)
     {
         $this->from = $table;
-
         return $this;
     }
 
@@ -518,7 +517,6 @@ class Builder
         list($value, $operator) = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() == 2
         );
-
         // If the columns is actually a Closure instance, we will assume the developer
         // wants to begin a nested where statement which is wrapped in parenthesis.
         // We'll add that Closure to the query then return back out immediately.
@@ -562,11 +560,10 @@ class Builder
         $this->wheres[] = compact(
             'type', 'column', 'operator', 'value', 'boolean'
         );
-
         if (! $value instanceof Expression) {
             $this->addBinding($value, 'where');
         }
-
+        dump($this->wheres);
         return $this;
     }
 
@@ -1112,7 +1109,6 @@ class Builder
     public function whereNested(Closure $callback, $boolean = 'and')
     {
         call_user_func($callback, $query = $this->forNestedWhere());
-
         return $this->addNestedWhereQuery($query, $boolean);
     }
 
@@ -1703,7 +1699,6 @@ class Builder
         $results = $this->processor->processSelect($this, $this->runSelect());
 
         $this->columns = $original;
-
         return collect($results);
     }
 

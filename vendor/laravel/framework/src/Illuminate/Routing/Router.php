@@ -491,7 +491,7 @@ class Router implements RegistrarContract, BindingRegistrar
     }
 
     /**
-     * Dispatch the request to the application.
+     * Dispatch the request to the application.(分发请求到application中)
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response

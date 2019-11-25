@@ -42,6 +42,7 @@ class ConnectionFactory
      */
     public function make(array $config, $name = null)
     {
+        //这个函数就是给表名加前缀 prefix
         $config = $this->parseConfig($config, $name);
 
         if (isset($config['read'])) {

@@ -2,6 +2,7 @@
 
 namespace Illuminate\Database;
 
+use http\Exception\BadQueryStringException;
 use Illuminate\Database\Query\Expression;
 
 abstract class Grammar
@@ -51,14 +52,12 @@ abstract class Grammar
         if ($this->isExpression($value)) {
             return $this->getValue($value);
         }
-
         // If the value being wrapped has a column alias we will need to separate out
         // the pieces so we can wrap each of the segments of the expression on it
         // own, and then joins them both back together with the "as" connector.
         if (strpos(strtolower($value), ' as ') !== false) {
             return $this->wrapAliasedValue($value, $prefixAlias);
         }
-
         return $this->wrapSegments(explode('.', $value));
     }
 
@@ -93,6 +92,15 @@ abstract class Grammar
      */
     protected function wrapSegments($segments)
     {
+        var_dump('**********');
+        var_dump($segments);
+        var_dump(collect($segments)->map(function ($segment, $key) use ($segments) {
+            var_dump('//////////////////');
+            var_dump($this->wrapValue($segment));
+            var_dump('//////////////////------------');
+            return $this->wrapValue($segment);
+        })->implode('.'));
+        var_dump('**********');
         return collect($segments)->map(function ($segment, $key) use ($segments) {
             return $key == 0 && count($segments) > 1
                             ? $this->wrapTable($segment)
@@ -111,7 +119,6 @@ abstract class Grammar
         if ($value !== '*') {
             return '"'.str_replace('"', '""', $value).'"';
         }
-
         return $value;
     }
 

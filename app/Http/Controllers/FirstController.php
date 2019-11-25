@@ -16,8 +16,21 @@ class FirstController extends Controller
 //    }
     //
     public function test(InterfaceTest $interfaceTest,Request $request){
-        $content = '<div style="background: red">张三</div>';
-        return $content;
+//        $result = DB::table('first')->select('id','name','inter')->max('id');
+//        $a = DB::table('first')->select('id')->get();
+//        dump($result);
+//        $where['inter'] = [
+//            ['>',1],
+//            ['<',2]
+//        ];
+//       $re = DB::table('first')->where([
+//           ['id','>',10],
+//           ['id','<',50]
+//       ])->where($where)
+//           ->orderby('id','desc')->get();
+//       var_dump($re);
+//        $content = '<div style="background: red">张三</div>';
+//        return $content;
 //        return 22343243232;
 //        $select = DB::table('first')->where([
 //            ['id','>',1],

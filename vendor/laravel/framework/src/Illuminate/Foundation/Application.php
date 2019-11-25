@@ -702,7 +702,7 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
     {
         $abstract = $this->getAlias($abstract);
 
-        if (isset($this->deferredServices[$abstract])) { //如果是延迟加载服务，则加载该服务
+        if (isset($this->deferredServices[$abstract])) { //如果存在延迟加载服务，则加载该服务
             $this->loadDeferredProvider($abstract);
         }
         return parent::make($abstract);

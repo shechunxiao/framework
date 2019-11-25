@@ -110,7 +110,6 @@ class Kernel implements KernelContract
      */
     public function handle($request)
     {
-        echo '到这了';
         try {
             $request->enableHttpMethodParameterOverride();
 
@@ -147,8 +146,8 @@ class Kernel implements KernelContract
 
         //下面是通过管道什么的分发请求(即分发到哪个控制器的哪个方法)，也就是获取到最后的$content
         return (new Pipeline($this->app))
-                    ->send($request)
-                    ->through($this->app->shouldSkipMiddleware() ? [] : $this->middleware)
+                    ->send($request) //设置发送对象
+                    ->through($this->app->shouldSkipMiddleware() ? [] : $this->middleware)  //设置通过的管道
                     ->then($this->dispatchToRouter());
     }
 

@@ -317,11 +317,8 @@ class Connection implements ConnectionInterface
             // row from the database table, and will either be an array or objects.
             $statement = $this->prepared($this->getPdoForSelect($useReadPdo)
                               ->prepare($query));
-
             $this->bindValues($statement, $this->prepareBindings($bindings));
-
             $statement->execute();
-
             return $statement->fetchAll();
         });
     }
@@ -580,7 +577,6 @@ class Connection implements ConnectionInterface
                 $bindings[$key] = 0;
             }
         }
-
         return $bindings;
     }
 

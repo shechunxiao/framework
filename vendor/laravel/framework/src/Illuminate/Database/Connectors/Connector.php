@@ -110,7 +110,7 @@ class Connector
     public function getOptions(array $config)
     {
         $options = Arr::get($config, 'options', []);
-
+        
         return array_diff_key($this->options, $options) + $options;
     }
 
