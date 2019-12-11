@@ -2,178 +2,219 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 
+use PhpZip\ZipFile;
 
 class FirstController extends Controller
 {
-//    public function tt($args=[]){
-//        $args = func_get_args();
-//        dump($args);
-//    }
-    //
-    public function test(InterfaceTest $interfaceTest,Request $request){
-//        $result = DB::table('first')->select('id','name','inter')->max('id');
-//        $a = DB::table('first')->select('id')->get();
-//        dump($result);
-//        $where['inter'] = [
-//            ['>',1],
-//            ['<',2]
-//        ];
-//       $re = DB::table('first')->where([
-//           ['id','>',10],
-//           ['id','<',50]
-//       ])->where($where)
-//           ->orderby('id','desc')->get();
-//       var_dump($re);
-//        $content = '<div style="background: red">张三</div>';
-//        return $content;
-//        return 22343243232;
-//        $select = DB::table('first')->where([
-//            ['id','>',1],
-//            ['name','=',1]
-//        ])->get();
-//        dump($select);
-//        $this->fdsfds();
-//        throw new \PDOException('fsdfdsfds');
-//        $A = new fsdfsdfsdfsddfs();
 
-        //过滤函数
-//        $a = [
-//          'tst','dds','','learn','test',''
-//        ];
-//        $b = array_filter($a,function($value){
-//            return false;
-//        });
-//        dump($b);
-//        echo __FUNCTION__;
-//        $function = 2;
-//        $columns = 333;
-//        dump(compact('function', 'columns','ddfdf'));
-//        dump(clone $this);
-//        $this->tt(['a','b','c']);
-//        $a = $_ENV;
-//        dump($a);
-//        $result = $interfaceTest->all();
-//        dump($result);
-//        dump($request->input());
-//        dump(config('test'));
-//        dump(basename('/config/app.php','.php'));
-//        $request = DB::table('first')->first();
-//        var_dump($request[0]);
-//        dump($request[0]);
+    /**
+     * 实现了压缩
+     */
+    public function testYaSuo()
+    {
+        $zip = new \ZipArchive();
+        @unlink(public_path() . '/me.zip'); //上来就删除它
+        if ($zip->open('me.zip', \ZIPARCHIVE::CREATE) === true) {
+            $zip->addEmptyDir('图片');
+//            var_dump(public_path('zip').'/lingshou.xlsx');die();
+//            //通过内容生成
+            $filename = public_path('zip') . '/汉字.xlsx';
+            $filename = iconv('utf-8', 'gbk', $filename);
+//            $content = file_get_contents($filename);
+//            $zip->addFromString('商品列表.xlsx',$content);
+            $zip->addFile($filename, '商品列表.xlsx');
+            //打开图片
+            if ($handle = opendir(public_path('zip/pic'))) {
+                // 添加目录中的所有文件
+                while (false !== ($entry = readdir($handle))) {
+                    if ($entry != "." && $entry != ".." && !is_dir($entry)) {
+                        $zip->addFile(public_path('zip/pic') . '/' . $entry, '图片/' . rand(0, 10000) . '.jpg');
+                    }
+                }
+                closedir($handle);
+            }
+            $zip->close();
+        }
+    }
 
-//       $first = DB::table('first')->get();
-//       dump($first);
-//       $line = DB::table('first')->where('id','=',1)->first();
-//       $value = DB::table('first')->where('id','=',1)->value('name');
-//       dump($line);
-//       dump($value);
-//       $pluck = DB::table('first')->pluck('name');
-//       dump($pluck);
-//       dump($pluck[0]);
-//       $chunk = DB::table('first')->orderBy('id','asc')->chunk(2,function($group){
-//            foreach ($group as &$value) {
-//                if($value->id>2){
-//                    return false;
-//                }
-//                DB::table('first')->where('id', '=', $value->id)->update(['name' => $value->name . '--']);
+
+    /**
+     * 实现解压
+     */
+    public function test()
+    {
+//        $zip = new \ZipArchive();
+//        if ($zip->open(public_path() . '/upload.zip')){
+//            for ($i=0;$i<$zip->numFiles;$i++){
+////                var_dump(iconv('utf-8','gbk',$zip->getNameIndex($i)));
+//                $entry = $zip->getNameIndex($i);
+//                $statInfo = $zip->statIndex($i);
+//                var_dump($statInfo);
+////                var_dump($entry);
 //            }
-//       });
-//       dump($chunk);
-//       $result = DB::table('first')->select(['id','name'])->get();
-//       $result = DB::table('first')->select('id','name')->get();
-//       $result = DB::table('first')->selectRaw('id,inter')->get();
-//       $result = DB::table('first')->selectRaw('id,inter as mylike')->get();
-//       $result = DB::table('first')->selectRaw('id,inter mylike')->get();
-//       $result = DB::table('first')->select('id','inter as mylike')->get();
-//       $result = DB::table('first')->select(['id','name as mylike'])->get();
-//       $result = DB::table('first')->select(DB::raw('id,name as mylike,inter as intertwo'))->get();
-//       dump($result);
-//        $count = DB::table('first')->count('id');
-//        $max = DB::table('first')->max('id');
-//        $min = DB::table('first')->min('id');
-//        $avg = DB::table('first')->avg('id');
-//        $sum = DB::table('first')->sum('id');
-//        dump($count);
-//        dump($max);
-//        dump($min);
-//        dump($avg);
-//        dump($sum);
-//        $join = DB::table('first')->where('first.id','=',1)
-//                ->select(DB::raw('first.*,first_extend.*,first_extend.id as iid'))
-//                ->join('first_extend','first_extend.first_id','=','first.id')
-//                ->first();
-//        $join = DB::table('first as f')->where('f.id','=',1)
-//            ->select(DB::raw('f.*,fe.*,fe.id as iid'))
-//            ->join('first_extend as fe','fe.first_id','=','f.id')
-//            ->first();
-//        $join = DB::table('first as f')->where('f.id','=',1)
-//            ->select(DB::raw('f.*,fe.*,fe.id as iid'))
-//            ->leftjoin('first_extend as fe','fe.first_id','=','f.id')
-//            ->first();
-//        $join = DB::table('first as f')->where('f.id','=',1)
-//                ->select(DB::raw('f.*,fe.*,fe.id as iid'))
-//                ->join('first_extend as fe',function($join){
-//                    $join->on('fe.first_id','=','f.id');
-//                })->first();
-//        dump($join);
-//        $first = DB::table('first')->where('id','>',3)->where('id','<',1)->get();
-//        dump($first);
-//        $pluck = DB::table('first')->pluck('id');
-//        dump($pluck);
-//        $extend = DB::table('first_extend')->whereIn('id',$pluck)->get();
-//        dump($extend);
-//        $exist = DB::table('first')
-//                ->whereExists(function($query){
-//                    $query->from('first_extend')->where('id','>=',1);
-//                })->get();
-//        dump($exist);
-//        $first = DB::table('first')->orderBy('id','desc')->get();
-//        $first = DB::table('first')->inRandomOrder()->get();
-//        $first = DB::table('first')->skip(1)->take(2)->get();
-//        dump($first);
-        //条件子句
-//        $id = '';
-//        $first = DB::table('first')->when($id,function($query)use($id){
-//            return $query->where('id','=',$id);
-//        },function($query){
-//            return $query->where('id','>',2);
-//        })->get();
-//        dump($first);
-//        $insert = DB::table('first')->insert([
-//            ['name'=>'insert1','inter'=>'fsdf'],
-//            ['name'=>'insert2','inter'=>'fsdf'],
-//            ['name'=>'insert3','inter'=>'fsdf'],
-//            ['name'=>'insert4','inter'=>'fsdf'],
-//        ]);
-//        $insert = DB::table('first')->insertGetId(
-//            ['name'=>'insert1','inter'=>'fsdf']);
-//        dump($insert);
-//        $update = DB::table('first')->where('id','=',1)->update(['name'=>'修改了']);
-//        dump($update);
-//        dump(__LINE__);
-//        dump(__FILE__);
-//        dump(__DIR__);
-//        dump(__FUNCTION__);
-//        dump(__CLASS__);
-//        dump(__METHOD__);
-//        dump(__NAMESPACE__);
-//       if (is_null($a = null)){
-//           echo 'null';
-//       }else{
-//           echo 'not null';
-//       }
-//        dump($this);
+////            var_dump($zip->getNameIndex(0));
+////            var_dump($zip->getNameIndex(1));
+////            var_dump($zip->getNameIndex(2));
+////            var_dump($zip->getNameIndex(3));
+////            var_dump($zip->getNameIndex(4));
+////            var_dump($zip->getNameIndex(5));
+////            var_dump($zip->numFiles);
+//            $zip->extractTo(public_path('jieya'));
+//            $zip->close();
+//        }
+//        rmdir(public_path().'/myfd');
+//        $result = scandir(public_path().'/upload');
+//        var_dump($result);
+//        foreach ($result as &$v){
+//            $v = iconv('gbk','utf-8',$v);
+//            var_dump($v);
+//        }
+//        rmdir(public_path().'/my');
+        $filename = public_path().'/test.zip';
+        $this->extractZipToFile($filename,public_path().'/file/');
+    }
 
-//        dump(1111);
+    /**
+     * @param string $zipName 需要解压的文件路径加文件名
+     * @param string $dir  解压后的文件夹路径
+     * @return bool
+     */
+    function extractZipToFile($zipName,$dir){
+        $zip = new \ZipArchive;
+        if ($zip->open($zipName) === TRUE) {
+            if(!is_dir($dir)) mkdir($dir,0775,true);
+            $docnum = $zip->numFiles;
+            for($i = 0; $i < $docnum; $i++) {
+                $statInfo = $zip->statIndex($i);
+                $filename = $this->transcoding($statInfo['name']);
+                $now = $filename;
+//                var_dump($now);
+                $filename = substr($filename, 0,-1);
+//                var_dump($filename);
+//                var_dump($now);
+                if($statInfo['crc'] == 0) {
+                    //新建目录
+                    $filename = substr($filename, 0,-1);
+                    $count = substr_count($filename,'/');
+                    if ($count>0){
+                        if(!is_dir($dir.'110/'.substr($now, 0,-1))) mkdir($dir.'110/'.substr($now, 0,-1),0775,true);
+                    }else{
+                        $now = 'upload';
+                        if(!is_dir($dir.'110/'.$now)){
+                            mkdir($dir.'110/'.$now,0775,true);
+                        }
+                    }
+                } else {
+
+                    //拷贝文件
+//                    copy('zip://'.$zipName.'#'.$zip->getNameIndex($i), $dir.'110/'.$filename);
+                    copy('zip://'.$zipName.'#'.$zip->getNameIndex($i), $dir.'110/'.$now.'/');
+                }
+            }
+            $zip->close();
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    function transcoding($fileName){
+        $encoding = mb_detect_encoding($fileName,['UTF-8','GBK','BIG5','CP936']);
+        if (DIRECTORY_SEPARATOR == '/'){    //linux
+            $filename = iconv($encoding,'UTF-8',$fileName);
+        }else{  //win
+            $filename = iconv($encoding,'GBK',$fileName);
+        }
+        return $filename;
+    }
 
 
+    public function test2()
+    {
+
+        $zip = new \ZipArchive;
+
+        if ($zip->open('test.zip', \ZipArchive::OVERWRITE) === true) {
+            // 将指定文件添加到zip中
+            $zip->addFile('test.txt');
+
+            // test.txt文件添加到zip并将其重命名为newfile.txt
+            $zip->addFile('test.txt', 'newfile.txt');
+
+            // 将test.txt文件添加到zip文件中的test文件夹内
+            $zip->addFile('mtest.txt', 'test/newfile.txt');
+
+            //将一个空的目录添加到zip中
+            $zip->addEmptyDir('测试');
+
+            // 将有指定内容的new.txt文件添加到zip文件中
+            $zip->addFromString('new.txt', '要添加到new.txt文件中的文本');
+
+            // 将有指定内容的new.txt添加到zip文件中的test文件夹
+            $zip->addFromString('la/new.txt', '要添加到new.txt文件中的文本');
+
+//            //将images目录下所有文件添加到zip中
+//            if ($handle = opendir('images')){
+//                // 添加目录中的所有文件
+//                while (false !== ($entry = readdir($handle))){
+//                    if ($entry != "." && $entry != ".." && !is_dir('images/' . $entry)){
+//                        $zip->addFile('images/' . $entry);
+//                    }
+//                }
+//                closedir($handle);
+//            }
+
+            // 关闭zip文件
+            $zip->close();
+        }
 
 
+        //压缩
+//        $zip = new \ZipArchive;
+//        if ($zip->open('图片.zip', \ZipArchive::CREATE) === true)
+//        {
+//            // 将指定文件添加到zip中
+//            $zip->addFile('test.txt');
+//
+//            // test.txt文件添加到zip并将其重命名为newfile.txt
+//            $zip->addFile('test.txt', 'newfile.txt');
+//
+//            // 将test.txt文件添加到zip文件中的test文件夹内
+//            $zip->addFile('test.txt', 'test/newfile.txt');
+//
+//            //将一个空的目录添加到zip中
+//            $zip->addEmptyDir ('test');
+//
+//            // 将有指定内容的new.txt文件添加到zip文件中
+//            $zip->addFromString('new.txt', '要添加到new.txt文件中的文本');
+//
+//            // 将有指定内容的new.txt添加到zip文件中的test文件夹
+//            $zip->addFromString('test/new.txt', '要添加到new.txt文件中的文本');
+//
+////            //将images目录下所有文件添加到zip中
+////            if ($handle = opendir('images')){
+////                // 添加目录中的所有文件
+////                while (false !== ($entry = readdir($handle))){
+////                    if ($entry != "." && $entry != ".." && !is_dir('images/' . $entry)){
+////                        $zip->addFile('images/' . $entry);
+////                    }
+////                }
+////                closedir($handle);
+////            }
+//
+//            // 关闭zip文件
+//            $zip->close();
+//        }
+
+
+    }
+
+
+    /**
+     * 上传文件
+     */
+    public function uploadFile(){
 
     }
 }
