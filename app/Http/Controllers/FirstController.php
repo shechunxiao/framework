@@ -106,7 +106,6 @@ class FirstController extends Controller
                         }
                     }
                 } else {
-
                     //拷贝文件
 //                    copy('zip://'.$zipName.'#'.$zip->getNameIndex($i), $dir.'110/'.$filename);
                     copy('zip://'.$zipName.'#'.$zip->getNameIndex($i), $dir.'110/'.$now.'/');
