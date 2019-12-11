@@ -71,16 +71,51 @@ class FirstController extends Controller
 //            var_dump($v);
 //        }
 //        rmdir(public_path().'/my');
-        $filename = public_path().'/test.zip';
-        $this->extractZipToFile($filename,public_path().'/file/');
+        //需要先删除原来的数组
+        $filename = public_path().'/ceshi.zip';
+        $this->extractZipToFile($filename,public_path().'/file/110/');
     }
+
+    /**
+     * 解压
+     * @param $zipName
+     * @param $dir
+     * @return bool
+     */
+    function extractZipToFile($zipName,$dir){
+        $zip = new \ZipArchive;
+        if ($zip->open($zipName) === TRUE) {
+            if(!is_dir($dir)) mkdir($dir,0775,true);
+            $docnum = $zip->numFiles;
+            for($i = 0; $i < $docnum; $i++) {
+                $statInfo = $zip->statIndex($i);
+                $filename = $this->transcoding($statInfo['name']);
+                if($statInfo['crc'] == 0) {
+                    //新建目录
+                    if(!is_dir($dir.'/'.substr($filename, 0,-1))) mkdir($dir.'/'.substr($filename, 0,-1),0775,true);
+                } else {
+                    //拷贝文件
+                    copy('zip://'.$zipName.'#'.$zip->getNameIndex($i), $dir.'/'.$filename);
+                }
+            }
+            $name = $zip->getNameIndex(0);
+            $name = substr($name,0,-1);
+            $name = iconv('utf-8','gbk',$name);
+            $zip->close();
+            rename($dir.$name,$dir.'upload'); //重新命名，方法取数据
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 
     /**
      * @param string $zipName 需要解压的文件路径加文件名
      * @param string $dir  解压后的文件夹路径
      * @return bool
      */
-    function extractZipToFile($zipName,$dir){
+    function extractZipToFile2($zipName,$dir){
         $zip = new \ZipArchive;
         if ($zip->open($zipName) === TRUE) {
             if(!is_dir($dir)) mkdir($dir,0775,true);
@@ -108,7 +143,7 @@ class FirstController extends Controller
                 } else {
                     //拷贝文件
 //                    copy('zip://'.$zipName.'#'.$zip->getNameIndex($i), $dir.'110/'.$filename);
-                    copy('zip://'.$zipName.'#'.$zip->getNameIndex($i), $dir.'110/'.$now.'/');
+                    copy('zip://'.$zipName.'#'.$zip->getNameIndex($i), $dir.'110/'.$filename.'/');
                 }
             }
             $zip->close();
