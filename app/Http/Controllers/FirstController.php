@@ -262,7 +262,7 @@ class FirstController extends Controller
     /**
      * 导出商品
      * @param Request $request
-     * @return BinaryFileResponse
+     * @return void
      */
     public function export(Request $request)
     {
@@ -297,7 +297,7 @@ class FirstController extends Controller
      */
     public function getGoods()
     {
-
+        
     }
 
     /**
@@ -343,7 +343,7 @@ class FirstController extends Controller
     /******************************************导出*****************************************/
 
     /**
-     * 删除目录和文件
+     * 删除目录下的文件
      * @param $path
      * @return void
      */
@@ -363,6 +363,7 @@ class FirstController extends Controller
             }
             closedir($handle);
         }
+        @rmdir($path);
     }
 
 
