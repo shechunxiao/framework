@@ -297,7 +297,7 @@ class FirstController extends Controller
      */
     public function getGoods()
     {
-        
+
     }
 
     /**
@@ -305,8 +305,6 @@ class FirstController extends Controller
      */
     public function buildFiles()
     {
-
-
         if (!is_file(public_path() . '/file/110/export/build/goods.xlsx')){
             return ['status'=>0,'msg'=>'导出到Excel失败'];
         }
