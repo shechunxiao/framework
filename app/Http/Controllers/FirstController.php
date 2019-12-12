@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FirstController extends Controller
 {
+    protected $uploadName;
+    protected $exportName;
+
     /**
      * 模拟上传图片的页面
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -33,13 +36,13 @@ class FirstController extends Controller
         $uploadFile = $this->uploadFile($request);
         if ($uploadFile['status'] == 0) return $uploadFile;
         //解压zip文件
-        $filename = public_path() . '/file/110/upload.zip';
-        $extract = $this->extractZipToFile($filename, public_path() . '/file/110/');
+        $filename = public_path() . '/file/110/upload/'.$this->uploadName.'/upload.zip';
+        $extract = $this->extractZipToFile($filename, public_path() . '/file/110/upload/'.$this->uploadName);
         if (!$extract) {
             return ['status' => 0, 'msg' => '解压失败'];
         }
         //验证解压后的文件的正确性
-        $path = public_path() . '/file/110/extract';
+        $path = public_path() . '/file/110/upload/'.$this->uploadName.'/extract';
         $verifyFile = $this->verifyFile($path);
         if ($verifyFile['status'] == 0) {
             return $verifyFile;
@@ -50,7 +53,7 @@ class FirstController extends Controller
             return $importData;
         }
         //清理上传文件和解压文件
-        $this->clearDirAndFiles(public_path() . '/file/110');
+//        $this->clearDirAndFiles(public_path() . '/file/110/upload/'.$this->uploadName);
         return ['status' => 1, 'msg' => '导入成功'];
     }
 
@@ -61,6 +64,7 @@ class FirstController extends Controller
      */
     public function uploadFile($request)
     {
+        $this->uploadName = time().rand(1,10000);
 //        $savePath = $request->input('path'); //暂时不用，最后再用
         if (!$request->hasFile('file')) {
             return ['status' => 0, 'msg' => '缺少文件'];
@@ -74,7 +78,7 @@ class FirstController extends Controller
             return ['status' => 0, 'msg' => '上传格式错误'];
         }
         $saveName = 'upload.' . $extension;
-        $savePath = public_path() . '/file/110/';
+        $savePath = public_path() . '/file/110/upload/'.$this->uploadName;
         $target = $file->move($savePath, $saveName);
         if ($target) {
             return ['status' => 1, 'msg' => '上传成功'];
@@ -232,7 +236,7 @@ class FirstController extends Controller
             $name = substr($name, 0, -1);
             $name = $this->transcoding($name);
             $zip->close();
-            @rename($dir . $name, $dir . 'extract'); //重新命名，方便取数据
+            @rename($dir .'/'. $name, $dir . '/extract'); //重新命名，方便取数据
             return true;
         } else {
             return false;
@@ -266,30 +270,42 @@ class FirstController extends Controller
      */
     public function export(Request $request)
     {
-        $this->clearDirAndFiles(public_path().'/file/110/export'); //清除上一次导出的数据文件
+//         log名字组成,员工ID+名字
+//        $log = file_get_contents(public_path().'/file/110/export/log.txt');
+//        $log = explode("\r\n",$log);
+//        var_dump($log);
+//        die();
+//        $this->exportName = time().rand(1,10000);
+//        $this->clearDirAndFiles(public_path().'/file/110/export'); //清除上一次导出的数据文件
 //        $type = $request->input('type'); //all,select
         //查询数据库获取数据
 //        $data = $this->getGoods();
 //        //创建excel表和图片文件夹
 //        $buildFiles = $this->buildFiles();
 //        //生成压缩文件
-        $path = public_path() . '/file/110/export/';
-        $zip = $this->zipFiles($path);
+//        $path = public_path() . '/file/110/export/';
+//        $zip = $this->zipFiles($path);
+//        file_put_contents(public_path().'/file/110/export/log.txt','1:'.$this->exportName."\r\n",FILE_APPEND ); //记录是哪个包
         //输出压缩包
 //        ob_end_clean();
-//        $filename = '基础商品库压缩包.zip';
-//        $file = public_path().'/file/110/export/goods.zip';
-//        if (file_exists($file)) {
-//            header('Content-Description: File download');
-//            header('Content-Type: application/x-zip');
-//            header('Content-Disposition: attachment; filename=' . $filename);
-//            header('Expires: 0');
-//            header('Cache-Control: must-revalidate');
-//            header('Pragma: public');
-//            header('Content-Length: ' . filesize($file));
-//            readfile($file);
-//            exit;
-//        }
+        $filename = '基础商品库压缩包.zip';
+        $file = public_path().'/file/110/export/goods.zip';
+        if (file_exists($file)) {
+            header('Content-Description: File download');
+            header('Content-Type: application/x-zip');
+            header('Content-Disposition: attachment; filename=' . $filename);
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file));
+            ob_clean();
+            flush();
+            if (readfile($file))
+            {
+                unlink($file);
+            }
+            exit;
+        }
     }
 
     /**
@@ -361,7 +377,7 @@ class FirstController extends Controller
             }
             closedir($handle);
         }
-        @rmdir($path);
+//        @rmdir($path);
     }
 
 
