@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FirstController extends Controller
 {
@@ -16,6 +17,8 @@ class FirstController extends Controller
     {
         return view('upload');
     }
+
+    /******************************************导入*****************************************/
 
     /**
      * 导入
@@ -203,29 +206,6 @@ class FirstController extends Controller
     }
 
     /**
-     * 删除上传的压缩包和解压文件
-     * @param $path
-     * @return void
-     */
-    public function clearDirAndFiles($path)
-    {
-        if ($handle = @opendir($path)) {
-            while (false !== ($entry = readdir($handle))) {
-                if ($entry == "." || $entry == "..") {
-                    continue;
-                }
-                if (is_dir($path_child = $path . '/' . $entry)) {
-                    $this->clearDirAndFiles($path_child);
-                    @rmdir($path_child);
-                } else {
-                    @unlink($path_child);
-                }
-            }
-            closedir($handle);
-        }
-    }
-
-    /**
      * 解压
      * @param $zipName
      * @param $dir
@@ -274,5 +254,116 @@ class FirstController extends Controller
         }
         return $filename;
     }
+
+    /******************************************导入*****************************************/
+
+
+    /******************************************导出*****************************************/
+    /**
+     * 导出商品
+     * @param Request $request
+     * @return BinaryFileResponse
+     */
+    public function export(Request $request)
+    {
+        $this->clearDirAndFiles(public_path().'/file/110/export'); //清除上一次导出的数据文件
+//        $type = $request->input('type'); //all,select
+        //查询数据库获取数据
+//        $data = $this->getGoods();
+//        //创建excel表和图片文件夹
+//        $buildFiles = $this->buildFiles();
+//        //生成压缩文件
+        $path = public_path() . '/file/110/export/';
+        $zip = $this->zipFiles($path);
+        //输出压缩包
+//        ob_end_clean();
+//        $filename = '基础商品库压缩包.zip';
+//        $file = public_path().'/file/110/export/goods.zip';
+//        if (file_exists($file)) {
+//            header('Content-Description: File download');
+//            header('Content-Type: application/x-zip');
+//            header('Content-Disposition: attachment; filename=' . $filename);
+//            header('Expires: 0');
+//            header('Cache-Control: must-revalidate');
+//            header('Pragma: public');
+//            header('Content-Length: ' . filesize($file));
+//            readfile($file);
+//            exit;
+//        }
+    }
+
+    /**
+     *  获取商品数据
+     */
+    public function getGoods()
+    {
+
+    }
+
+    /**
+     * 生成文件
+     */
+    public function buildFiles()
+    {
+
+
+        if (!is_file(public_path() . '/file/110/export/build/goods.xlsx')){
+            return ['status'=>0,'msg'=>'导出到Excel失败'];
+        }
+    }
+
+    /**
+     * 压缩文件
+     * @param $path
+     */
+    public function zipFiles($path)
+    {
+        $zip = new \ZipArchive();
+        @unlink($path . 'goods.zip'); //删除原来的
+        if ($zip->open($path . 'goods.zip', \ZIPARCHIVE::CREATE) === true) {
+            $zip->addEmptyDir('goods/图片');
+            $filename = $path . 'build/goods.xlsx';
+            $content = file_get_contents($filename);
+            $zip->addFromString('goods/商品列表.xlsx', $content);
+            //添加图片
+            if ($handle = opendir($path . 'build/pic')) {
+                // 添加目录中的所有文件
+                while (false !== ($entry = readdir($handle))) {
+                    if ($entry != "." && $entry != ".." && !is_dir($entry)) {
+                        $zip->addFile($path . 'build/pic/' . $entry, 'goods/图片/' . $entry);
+                    }
+                }
+                closedir($handle);
+            }
+            $zip->close();
+        }
+    }
+
+
+    /******************************************导出*****************************************/
+
+    /**
+     * 删除目录和文件
+     * @param $path
+     * @return void
+     */
+    public function clearDirAndFiles($path)
+    {
+        if ($handle = @opendir($path)) {
+            while (false !== ($entry = readdir($handle))) {
+                if ($entry == "." || $entry == "..") {
+                    continue;
+                }
+                if (is_dir($path_child = $path . '/' . $entry)) {
+                    $this->clearDirAndFiles($path_child);
+                    @rmdir($path_child);
+                } else {
+                    @unlink($path_child);
+                }
+            }
+            closedir($handle);
+        }
+    }
+
 
 }

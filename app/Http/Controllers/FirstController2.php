@@ -22,8 +22,8 @@ class FirstController2 extends Controller
             $filename = public_path('zip') . '/汉字.xlsx';
             $filename = iconv('utf-8', 'gbk', $filename);
 //            $content = file_get_contents($filename);
-//            $zip->addFromString('商品列表.xlsx',$content);
-            $zip->addFile($filename, '商品列表.xlsx');
+//            $zip->addFromString('lists.xlsx',$content);
+            $zip->addFile($filename, 'lists.xlsx');
             //打开图片
             if ($handle = opendir(public_path('zip/pic'))) {
                 // 添加目录中的所有文件
@@ -72,7 +72,7 @@ class FirstController2 extends Controller
 //        }
 //        rmdir(public_path().'/my');
         //需要先删除原来的数组
-        $filename = public_path().'/ceshi.zip';
+        $filename = public_path().'/goods.zip';
         $this->extractZipToFile($filename,public_path().'/file/110/');
     }
 
@@ -169,7 +169,7 @@ class FirstController2 extends Controller
 
         $zip = new \ZipArchive;
 
-        if ($zip->open('test.zip', \ZipArchive::OVERWRITE) === true) {
+        if ($zip->open('goods.zip', \ZipArchive::OVERWRITE) === true) {
             // 将指定文件添加到zip中
             $zip->addFile('test.txt');
 
