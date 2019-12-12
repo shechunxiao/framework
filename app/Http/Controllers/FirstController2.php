@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 
 use PhpZip\ZipFile;
 
-class FirstController extends Controller
+class FirstController2 extends Controller
 {
 
     /**

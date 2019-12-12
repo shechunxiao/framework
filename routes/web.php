@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::any('/test', 'FirstController@test');
+Route::any('/test', 'FirstController2@test');
 Route::any('/ceshi', 'Ceshi@index');
 Route::any('/one', 'Test\OneController@index');
+Route::any('/upload', 'FirstController@upload');
+Route::any('/import', 'FirstController@import');
