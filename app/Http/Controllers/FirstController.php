@@ -36,13 +36,14 @@ class FirstController extends Controller
         $uploadFile = $this->uploadFile($request);
         if ($uploadFile['status'] == 0) return $uploadFile;
         //解压zip文件
-        $filename = public_path() . '/file/110/upload/'.$this->uploadName.'/upload.zip';
-        $extract = $this->extractZipToFile($filename, public_path() . '/file/110/upload/'.$this->uploadName);
+        $filename = public_path() . '/file/110/upload/' . $this->uploadName . '/upload.zip';
+        $extract = $this->extractZipToFile($filename, public_path() . '/file/110/upload/' . $this->uploadName);
         if (!$extract) {
             return ['status' => 0, 'msg' => '解压失败'];
         }
+        die();
         //验证解压后的文件的正确性
-        $path = public_path() . '/file/110/upload/'.$this->uploadName.'/extract';
+        $path = public_path() . '/file/110/upload/' . $this->uploadName . '/extract';
         $verifyFile = $this->verifyFile($path);
         if ($verifyFile['status'] == 0) {
             return $verifyFile;
@@ -64,7 +65,7 @@ class FirstController extends Controller
      */
     public function uploadFile($request)
     {
-        $this->uploadName = time().rand(1,10000);
+        $this->uploadName = time() . rand(1, 10000);
 //        $savePath = $request->input('path'); //暂时不用，最后再用
         if (!$request->hasFile('file')) {
             return ['status' => 0, 'msg' => '缺少文件'];
@@ -78,7 +79,7 @@ class FirstController extends Controller
             return ['status' => 0, 'msg' => '上传格式错误'];
         }
         $saveName = 'upload.' . $extension;
-        $savePath = public_path() . '/file/110/upload/'.$this->uploadName;
+        $savePath = public_path() . '/file/110/upload/' . $this->uploadName;
         $target = $file->move($savePath, $saveName);
         if ($target) {
             return ['status' => 1, 'msg' => '上传成功'];
@@ -221,6 +222,16 @@ class FirstController extends Controller
         if ($zip->open($zipName) === TRUE) {
             if (!is_dir($dir)) mkdir($dir, 0775, true);
             $num = $zip->numFiles;
+            //根据文件名称长度排序,因为不同的压缩软件压缩的压缩包结构不同，编码不同。
+            $nameArr = [];
+            for ($i = 0; $i < $num; $i++) {
+                $statInfo = $zip->statIndex($i);
+                $nameArr[$statInfo['name']] = [
+                    'statInfo'=>$statInfo,
+                    'key'=>$i,
+                ];
+            }
+            dump($nameArr);die();
             for ($i = 0; $i < $num; $i++) {
                 $statInfo = $zip->statIndex($i);
                 $filename = $this->transcoding($statInfo['name']);
@@ -236,7 +247,7 @@ class FirstController extends Controller
             $name = substr($name, 0, -1);
             $name = $this->transcoding($name);
             $zip->close();
-            @rename($dir .'/'. $name, $dir . '/extract'); //重新命名，方便取数据
+            @rename($dir . '/' . $name, $dir . '/extract'); //重新命名，方便取数据
             return true;
         } else {
             return false;
@@ -270,13 +281,24 @@ class FirstController extends Controller
      */
     public function export(Request $request)
     {
-//         log名字组成,员工ID+名字
-//        $log = file_get_contents(public_path().'/file/110/export/log.txt');
-//        $log = explode("\r\n",$log);
-//        var_dump($log);
-//        die();
-//        $this->exportName = time().rand(1,10000);
-//        $this->clearDirAndFiles(public_path().'/file/110/export'); //清除上一次导出的数据文件
+        /********删除掉该账号上次导出的数据和文件(开始)*********/
+        $memberId = 1;
+        //log名字组成,员工ID:文件名
+        $originLog = @file_get_contents(public_path() . '/file/110/export/log.txt');
+        $log = explode("\r\n", $originLog);
+        $filename = '';
+        foreach ($log as $v) {
+            if (substr_count($v, $memberId . ':')) {
+                $filename = $v;
+                break;
+            }
+        }
+        $filenameDes = explode(':', $filename)[1];
+        $this->clearDirAndFiles(public_path() . '/file/110/export/' . $filenameDes);
+        $content = str_replace($filename . "\r\n", '', $originLog);
+        file_put_contents(public_path() . '/file/110/export/log.txt', $content);
+        /********删除掉该账号上次导出的数据和文件(结束)*********/
+        $this->exportName = time() . rand(1, 10000);
 //        $type = $request->input('type'); //all,select
         //查询数据库获取数据
 //        $data = $this->getGoods();
@@ -285,27 +307,23 @@ class FirstController extends Controller
 //        //生成压缩文件
 //        $path = public_path() . '/file/110/export/';
 //        $zip = $this->zipFiles($path);
-//        file_put_contents(public_path().'/file/110/export/log.txt','1:'.$this->exportName."\r\n",FILE_APPEND ); //记录是哪个包
+        file_put_contents(public_path() . '/file/110/export/log.txt', '1:' . $this->exportName . "\r\n", FILE_APPEND); //记录是哪个包
         //输出压缩包
-//        ob_end_clean();
-        $filename = '基础商品库压缩包.zip';
-        $file = public_path().'/file/110/export/goods.zip';
-        if (file_exists($file)) {
-            header('Content-Description: File download');
-            header('Content-Type: application/x-zip');
-            header('Content-Disposition: attachment; filename=' . $filename);
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($file));
-            ob_clean();
-            flush();
-            if (readfile($file))
-            {
-                unlink($file);
-            }
-            exit;
-        }
+//        $filename = '基础商品库压缩包.zip';
+//        $file = public_path().'/file/110/export/goods.zip';
+//        if (file_exists($file)) {
+//            header('Content-Description: File download');
+//            header('Content-Type: application/x-zip');
+//            header('Content-Disposition: attachment; filename=' . $filename);
+//            header('Expires: 0');
+//            header('Cache-Control: must-revalidate');
+//            header('Pragma: public');
+//            header('Content-Length: ' . filesize($file));
+//            ob_clean();
+//            flush();
+//            @readfile($file);
+//            exit;
+//        }
     }
 
     /**
@@ -321,8 +339,8 @@ class FirstController extends Controller
      */
     public function buildFiles()
     {
-        if (!is_file(public_path() . '/file/110/export/build/goods.xlsx')){
-            return ['status'=>0,'msg'=>'导出到Excel失败'];
+        if (!is_file(public_path() . '/file/110/export/build/goods.xlsx')) {
+            return ['status' => 0, 'msg' => '导出到Excel失败'];
         }
     }
 
@@ -377,7 +395,7 @@ class FirstController extends Controller
             }
             closedir($handle);
         }
-//        @rmdir($path);
+        @rmdir($path);
     }
 
 
