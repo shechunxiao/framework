@@ -231,7 +231,6 @@ class FirstController extends Controller
                     'key'=>$i,
                 ];
             }
-            dump($nameArr);die();
             for ($i = 0; $i < $num; $i++) {
                 $statInfo = $zip->statIndex($i);
                 $filename = $this->transcoding($statInfo['name']);

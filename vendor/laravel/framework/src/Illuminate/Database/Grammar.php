@@ -92,15 +92,6 @@ abstract class Grammar
      */
     protected function wrapSegments($segments)
     {
-        var_dump('**********');
-        var_dump($segments);
-        var_dump(collect($segments)->map(function ($segment, $key) use ($segments) {
-            var_dump('//////////////////');
-            var_dump($this->wrapValue($segment));
-            var_dump('//////////////////------------');
-            return $this->wrapValue($segment);
-        })->implode('.'));
-        var_dump('**********');
         return collect($segments)->map(function ($segment, $key) use ($segments) {
             return $key == 0 && count($segments) > 1
                             ? $this->wrapTable($segment)

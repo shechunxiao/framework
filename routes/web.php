@@ -21,3 +21,4 @@ Route::any('/one', 'Test\OneController@index');
 Route::any('/upload', 'FirstController@upload');
 Route::any('/import', 'FirstController@import');
 Route::any('/export', 'FirstController@export');
+Route::any('/second','SecondController@index');

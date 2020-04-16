@@ -87,7 +87,6 @@ foreach ($files as $file) {
             echo $serializer->serialize($stmts), "\n";
         } elseif ('var-dump' === $operation) {
             echo "==> var_dump():\n";
-            var_dump($stmts);
         } elseif ('resolve-names' === $operation) {
             echo "==> Resolved names.\n";
             $stmts = $traverser->traverse($stmts);
