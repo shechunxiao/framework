@@ -12,6 +12,12 @@ class FirstController extends Controller
     protected $uploadName;
     protected $exportName;
 
+    public function test(Request $request){
+        $data = $request->input();
+        dump($data);
+        $da = $data['data'];
+        dump(json_decode($da,true));
+    }
     /**
      * 模拟上传图片的页面
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
